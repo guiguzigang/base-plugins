@@ -1,12 +1,14 @@
 {
   "name": "base-plugins-js",
-  "version": "1.0.2",
+  "version": "0.0.12",
   "description": "javascript tablescroll plugin",
   "main": "index.js",
-  "github": "https://github.com/guiguzigang",
-  "scripts": {
-    
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guiguzigang/base-plugins"
   },
+  "keywords": "javascript, table-scroll, storage",
+  "scripts": {},
   "author": "guiguzigang",
   "license": "MIT"
 }
