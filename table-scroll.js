@@ -46,12 +46,6 @@ export default class TableScroll {
         this.scrollTop(this.el)
       }
     }, 1000)
-    // this.setAttr(this.el, 'data-scroll', 'yes')
-    // if (this.el.getAttribute('data-scroll-dir') === 'bottom') {
-    //   this.scrollBottom(this.el, this.el.scrollTop)
-    // } else {
-    //   this.scrollTop(this.el)
-    // }
   }
 
   destory() {
@@ -67,7 +61,6 @@ export default class TableScroll {
 
   scrollBottom(el, start = 0, end) {
     end = end || el.scrollHeight - el.clientHeight
-    console.log(end, el.scrollHeight, el.clientHeight, el)
     const difference = Math.abs(start - end)
     const step = Math.ceil(difference / this.duration * 50)
     this.setAttr(this.el, 'data-scroll', 'yes')

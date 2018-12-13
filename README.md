@@ -21,3 +21,35 @@ destroyed() {
   this.tableScroll.destroy()
 },
 ```
+
+# storage
+
+默认使用
+```js
+// 默认输出为storage（sessionStorage）
+import storage, {localStorage} from 'base-plugin-js/storage'
+
+storage.set('key', 'value')
+
+storage.get('key')
+
+// 获取到之后回调
+storage.get('key', value => {
+  console.log(value)
+})
+
+// 清空
+storage.clear()
+
+// 删除
+storage.remove('key')
+
+// 监听storage的设置事件
+window.addEventListener('setItemEvent', evt => {
+  console.log(evt.oldValue)
+  console.log(evt.value)
+  console.log(evt.key)
+})
+
+// localStorage 与storage方法相同
+```
