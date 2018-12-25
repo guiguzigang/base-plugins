@@ -71,7 +71,7 @@ export default class TableScroll {
   scrollTop(el, start, end = 0) {
     start = start || el.scrollTop
     var difference = Math.abs(start - end)
-    var step = Math.ceil(difference / 100 * 50)
+    var step = Math.ceil(difference / this.duration * 50)
     this.setAttr(el, 'data-scroll', 'yes')
     this.setAttr(el, 'data-scroll-dir', 'top')
     this.scroll(el, start, end, step)
