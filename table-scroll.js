@@ -62,7 +62,8 @@ export default class TableScroll {
   scrollBottom(el, start = 0, end) {
     end = end || el.scrollHeight - el.clientHeight
     const difference = Math.abs(start - end)
-    const step = Math.ceil(difference / this.duration * 50)
+//     const step = Math.ceil(difference / this.duration * 50)
+    const step = parseFloat((difference / this.duration * 50 / 10000).toFixed(4))
     this.setAttr(this.el, 'data-scroll', 'yes')
     this.setAttr(this.el, 'data-scroll-dir', 'bottom')
     this.scroll(this.el, start, end, step)
@@ -71,7 +72,7 @@ export default class TableScroll {
   scrollTop(el, start, end = 0) {
     start = start || el.scrollTop
     var difference = Math.abs(start - end)
-    var step = Math.ceil(difference / 100 * 50)
+    var step = Math.ceil(difference / 1000 * 50)
     this.setAttr(el, 'data-scroll', 'yes')
     this.setAttr(el, 'data-scroll-dir', 'top')
     this.scroll(el, start, end, step)
@@ -96,7 +97,7 @@ export default class TableScroll {
 
     if (el.scrollTop + el.clientHeight >= el.scrollHeight) {
       this.scrollTop(el)
-    } else if (el.scrollTop <= 0) {
+    } else if (el.scrollTop <= 0 && d <= 0) {
       this.scrollBottom(el)
     } else {
       requestAnimationFrame(() => this.scroll(el, d, end, step))
