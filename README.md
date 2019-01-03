@@ -53,3 +53,20 @@ window.addEventListener('setItemEvent', evt => {
 
 // localStorage 与storage方法相同
 ```
+
+# Wave水波纹插件
+
+使用
+```js
+import Wave from 'base-plugin-js/wave'
+const wave = new Wave({
+  data: 0.5,
+  width: 100,
+  height: 100
+})
+```
+
+销毁
+```js
+wave.destroy()
+```
