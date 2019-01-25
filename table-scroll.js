@@ -1,23 +1,40 @@
-import {requestAnimationFrame, on, off} from './dom'
-import {sleep} from './utils'
+import {
+  requestAnimationFrame,
+  on,
+  off
+} from 'utils/dom'
+import {
+  sleep
+} from 'utils/util'
 
 // 用于el-table的滚动，需要放在table中的数据再页面中渲染完后执行
-export async function elTableScroll(ref) {
+export async function elTableScroll(ref, options) {
   // 等待dom渲染
   await sleep(30)
   return new Promise(async (resolve, reject) => {
     const el = ref.$children[ref.$children.length - 1].$el.parentNode
-    // .querySelector('.el-table__body')
-    const tableScroll = new TableScroll(el)
+    const tableScroll = new TableScroll(el, options)
     tableScroll.run()
     resolve(tableScroll)
   })
 }
 
 export default class TableScroll {
-  constructor(el, duration = 10000000) {
+  constructor(el, options) {
     this.el = el
-    this.duration = duration
+    this.options = {
+      step: 0.6,
+      duration: 25,
+      useType: 'step'
+    }
+    if (typeof options === 'object') {
+      Object.assign(this.options, options)
+    } else {
+      this.duration = options
+    }
+
+    // this.duration = duration
+    // this.step = step
     this.timer = null
   }
 
@@ -62,11 +79,21 @@ export default class TableScroll {
   scrollBottom(el, start = 0, end) {
     end = end || el.scrollHeight - el.clientHeight
     const difference = Math.abs(start - end)
-//     const step = Math.ceil(difference / this.duration * 50)
-    const step = parseFloat((difference / this.duration * 50 / 10000).toFixed(4))
+    let _step
+    if (this.duration) {
+      _step = parseFloat((difference / this.duration * 50 / 10000).toFixed(4))
+    } else {
+      const {
+        duration,
+        step,
+        useType
+      } = this.options
+      _step = useType === 'step' ? step : parseFloat((difference / duration * 50 / 10000).toFixed(4))
+    }
+
     this.setAttr(this.el, 'data-scroll', 'yes')
     this.setAttr(this.el, 'data-scroll-dir', 'bottom')
-    this.scroll(this.el, start, end, step)
+    this.scroll(this.el, start, end, _step)
   }
 
   scrollTop(el, start, end = 0) {
@@ -80,7 +107,9 @@ export default class TableScroll {
 
   scroll(el, start, end, step) {
     if (el.getAttribute('data-scroll') === 'no') return
-    if (start === end) return
+    if (start === end) {
+      return setTimeout(this.scrollBottom(el), 5000)
+    }
 
     // 从上往下滚
     let d = (start + step > end) ? end : start + step
@@ -88,7 +117,6 @@ export default class TableScroll {
     if (start > end) {
       d = (start - step < end) ? end : start - step
     }
-
     if (el === window) {
       window.scrollTo(d, d)
     } else {
