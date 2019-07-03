@@ -1,32 +1,5 @@
-/* eslint-disabled */
-const inBrowser = typeof window !== 'undefined';
-const inWeex = typeof WXEnvironment !== 'undefined' && !!WXEnvironment.platform;
-const weexPlatform = inWeex && WXEnvironment.platform.toLowerCase();
-const UA = inBrowser && window.navigator.userAgent.toLowerCase();
-const isIE = UA && /msie|trident/.test(UA);
-const isIE9 = UA && UA.indexOf('msie 9.0') > 0;
-const isEdge = UA && UA.indexOf('edge/') > 0;
-const isAndroid = (UA && UA.indexOf('android') > 0) || (weexPlatform === 'android');
-const isIOS = (UA && /iphone|ipad|ipod|ios/.test(UA)) || (weexPlatform === 'ios');
-const isChrome = UA && /chrome\/\d+/.test(UA) && !isEdge;
-
-let _isServer
-const isServerRendering = function () {
-	if (_isServer === undefined) {
-	  /* istanbul ignore if */
-	  if (!inBrowser && !inWeex && typeof global !== 'undefined') {
-		// detect presence of vue-server-renderer and avoid
-		// Webpack shimming the process
-		_isServer = global['process'] && global['process'].env.VUE_ENV === 'server';
-	  } else {
-		_isServer = false;
-	  }
-	}
-	return _isServer
-};
-
-isServerRendering()
-
+import Vue from 'vue'
+const isServer = Vue.prototype.$isServer
 const ieVersion = isServer ? 0 : Number(document.documentMode)
 const SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g
 const MOZ_HACK_REGEXP = /^moz([A-Z])/
@@ -178,7 +151,7 @@ export function getImageNaturalSize(img) {
 
 // 绑定dom事件，只执行一次
 export const once = function (el, event, fn) {
-  var listener = function () {
+  const listener = function () {
     if (fn) {
       fn.apply(this, arguments)
     }
@@ -210,11 +183,11 @@ export function hasClass(el, cls) {
  */
 export function addClass(el, cls) {
   if (!el) return
-  var curClass = el.className
-  var classes = (cls || '').split(' ')
+  let curClass = el.className
+  const classes = (cls || '').split(' ')
 
-  for (var i = 0, j = classes.length; i < j; i++) {
-    var clsName = classes[i]
+  for (let i = 0, j = classes.length; i < j; i++) {
+    const clsName = classes[i]
     if (!clsName) continue
 
     if (el.classList) {
@@ -231,11 +204,11 @@ export function addClass(el, cls) {
 /* istanbul ignore next */
 export function removeClass(el, cls) {
   if (!el || !cls) return
-  var classes = cls.split(' ')
-  var curClass = ' ' + el.className + ' '
+  const classes = cls.split(' ')
+  let curClass = ' ' + el.className + ' '
 
-  for (var i = 0, j = classes.length; i < j; i++) {
-    var clsName = classes[i]
+  for (let i = 0, j = classes.length; i < j; i++) {
+    const clsName = classes[i]
     if (!clsName) continue
 
     if (el.classList) {
@@ -307,7 +280,7 @@ export const getStyle = ieVersion < 9 ? function (element, styleName) {
     styleName = 'cssFloat'
   }
   try {
-    var computed = document.defaultView.getComputedStyle(element, '')
+    const computed = document.defaultView.getComputedStyle(element, '')
     return element.style[styleName] || computed ? computed[styleName] : null
   } catch (e) {
     return element.style[styleName]
@@ -317,7 +290,7 @@ export const getStyle = ieVersion < 9 ? function (element, styleName) {
 /**
  * 设置css样式
  * @param {dom} element dom元素
- * @param {*} styleName css属性，驼峰命名
+ * @param {string} styleName css属性，驼峰命名
  * @param {*} value css属性的值
  * @return {void}
  */
@@ -325,7 +298,7 @@ export function setStyle(element, styleName, value) {
   if (!element || !styleName) return
 
   if (typeof styleName === 'object') {
-    for (var prop in styleName) {
+    for (const prop in styleName) {
       if (styleName.hasOwnProperty(prop)) {
         setStyle(element, prop, styleName[prop])
       }
@@ -341,6 +314,17 @@ export function setStyle(element, styleName, value) {
 }
 
 /**
+ * 设置css样式
+ * @param {dom} element dom元素
+ * @param {styles} 样式对象，attr为驼峰命名
+ */
+export function setStyles(element, styles) {
+  Object.keys(styles).forEach(attr => {
+    setStyle(element, attr, styles[attr])
+  })
+}
+
+/**
  * 获取dom元素data属性的数据，如果有val,则设置data-[name]的属性为val
  * @param {dom} el dom元素
  * @param {string} name data-[name]
@@ -348,7 +332,7 @@ export function setStyle(element, styleName, value) {
  * @return {string|void}
  */
 export function getData(el, name, val) {
-  let prefix = 'data-'
+  const prefix = 'data-'
   if (val) {
     return el.setAttribute(prefix + name, val)
   }
@@ -389,7 +373,7 @@ const vendor = (_ => {
     ms: 'msTransform',
     standard: 'transform'
   }
-  for (let k in transformNames) {
+  for (const k in transformNames) {
     if (elementStyle[transformNames[k]] !== undefined) {
       return k
     }
@@ -450,4 +434,32 @@ export function overflowEllipsis(el, row) {
   } else {
     el.innerText = data
   }
+}
+
+/**
+ * 获取文本在页面上展示的实际的宽度 与 高度
+ * @param {String} text
+ * @param {String} fontSize
+ * @param {String} fontFamily
+ * @return {Object} {width, height}
+ */
+export function textSize(text, fontSize = '14px', fontFamily = 'inherit') {
+  const span = document.createElement('span')
+  const result = {}
+  result.width = span.offsetWidth
+  result.height = span.offsetHeight
+  span.style.visibility = 'hidden'
+  span.style.fontSize = fontSize
+  span.style.fontFamily = fontFamily
+  span.style.display = 'inline-block'
+  if (typeof span.textContent !== 'undefined') {
+    span.textContent = text
+  } else {
+    span.innerText = text
+  }
+  document.body.appendChild(span)
+  result.width = parseFloat(window.getComputedStyle(span).width) - result.width
+  result.height = parseFloat(window.getComputedStyle(span).height) - result.height
+  document.body.removeChild(span)
+  return result
 }

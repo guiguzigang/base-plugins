@@ -25,7 +25,7 @@ export default class Wave {
     this.canvas = null
     this.ctx = null
     this.end = false
-    
+
     const scale = this.getCanvasScale()
     const lineWidth = 2 * scale,
       width = (options.width || 250) * scale,
@@ -48,7 +48,7 @@ export default class Wave {
       swing: 0, // 周期偏移量,速度
       nowdata: 0,
       // waveupsp: 0.0001, // 水波上涨速度
-      amend: 0.0001, // 用于修正数值偏差
+      s: 0.0001, // 用于修正数值偏差
       step,
       waveupsp,
       // 圆动画初始参数
@@ -268,16 +268,16 @@ export default class Wave {
       }
     }
     const gap = data - this.options.nowdata
-    if (M.abs(parseFloat(gap.toFixed(4))) >= 0.0001) {
+    if (Math.abs(parseFloat(gap.toFixed(4))) >= 0.0001) {
       if (gap > 0.001) {
         this.options.nowdata += this.options.waveupsp
       } else if (gap <= 0.001 && gap > 0) {
-        this.options.nowdata += this.options.amend
+        this.options.nowdata += this.options.s
       }
       if (gap < -0.001) {
         this.options.nowdata -= this.options.waveupsp
       } else if (gap >= -0.001 && gap < 0) {
-        this.options.nowdata -= this.options.amend
+        this.options.nowdata -= this.options.s
       }
     } else {
       this.end = true
